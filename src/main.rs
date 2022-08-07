@@ -6,7 +6,7 @@ fn main() {
     let mut conn = connect();
 
     basic_set(&mut conn, "alice", "001");
-    
+
     let value1 = basic_get(&mut conn, "alice");
     println!("Value 1: {:?}", value1);
 
@@ -26,7 +26,7 @@ fn main() {
     if list_length > 0 {
         list_pop(&mut conn, list_name.into(), NonZeroUsize::new(list_length));
     }
-    
+
     list_push(&mut conn, list_name, "carol");
     list_push(&mut conn, list_name, "david");
 
@@ -37,8 +37,10 @@ fn main() {
 
 fn connect() -> Connection {
     dotenv().expect(".env file not found");
-    let hostname = env::var("REDIS_HOSTNAME").expect("Environment variable REDIS_HOSTNAME not found");
-    let password = env::var("REDIS_PASSWORD").expect("Environment variable REDIS_PASSWORD not found");
+    let hostname =
+        env::var("REDIS_HOSTNAME").expect("Environment variable REDIS_HOSTNAME not found");
+    let password =
+        env::var("REDIS_PASSWORD").expect("Environment variable REDIS_PASSWORD not found");
 
     let conn_url = format!("redis://:{}@{}", password, hostname);
     Client::open(conn_url)
@@ -62,7 +64,7 @@ fn basic_get(conn: &mut Connection, key: &str) -> String {
         .expect("Failed to execute GET")
 }
 
-fn hash_set(conn: &mut Connection, hash_key: &str, id_map: BTreeMap::<String, String>) {
+fn hash_set(conn: &mut Connection, hash_key: &str, id_map: BTreeMap<String, String>) {
     redis::cmd("HSET")
         .arg(hash_key)
         .arg(id_map)
@@ -70,10 +72,10 @@ fn hash_set(conn: &mut Connection, hash_key: &str, id_map: BTreeMap::<String, St
         .expect("Failed to execute HSET");
 }
 
-fn hash_get_all(conn: &mut Connection, hash_key: &str) -> BTreeMap::<String, String> {
+fn hash_get_all(conn: &mut Connection, hash_key: &str) -> BTreeMap<String, String> {
     redis::cmd("HGETALL")
         .arg(hash_key)
-        .query::<BTreeMap::<String, String>>(conn)
+        .query::<BTreeMap<String, String>>(conn)
         .expect("Failed to execute HGETALL")
 }
 
@@ -86,13 +88,16 @@ fn list_push(conn: &mut Connection, list_name: &str, member_name: &str) {
 }
 
 fn list_pop(conn: &mut Connection, list_name: String, count: Option<NonZeroUsize>) {
-    conn.lpop::<String, Vec<String>>(list_name, count).expect("Failed to execute LPOP");
+    conn.lpop::<String, Vec<String>>(list_name, count)
+        .expect("Failed to execute LPOP");
 }
 
 fn list_len(conn: &mut Connection, list_name: String) -> usize {
-    conn.llen::<String, usize>(list_name).expect("Failed to execute LLEN")
+    conn.llen::<String, usize>(list_name)
+        .expect("Failed to execute LLEN")
 }
 
 fn list_range(conn: &mut Connection, list_name: String, start: isize, stop: isize) -> Vec<String> {
-    conn.lrange::<String, Vec<String>>(list_name, start, stop).expect("Failed to execute LRANGE")
+    conn.lrange::<String, Vec<String>>(list_name, start, stop)
+        .expect("Failed to execute LRANGE")
 }
